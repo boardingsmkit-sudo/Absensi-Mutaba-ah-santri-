@@ -1010,7 +1010,7 @@
       (data||[]).forEach(r=>{
         if(!catatanData[r.santri_id]) catatanData[r.santri_id] = [];
         catatanData[r.santri_id].push({
-          id:r.id, tanggal:r.tanggal, jenis:r.jenis, keterangan:r.keterangan, tanggalKembali:r.tanggal_kembali
+          id:r.id, tanggal:r.tanggal, jenis:r.jenis, keterangan:r.keterangan, tanggalKembali:r.tanggal_kembali, solusi:r.solusi
         });
       });
     }catch(e){ catatanData = {}; showToast('Gagal memuat catatan santri', true); }
@@ -1093,7 +1093,8 @@
     try{
       const { data, error } = await db.from('catatan_santri').insert({
         santri_id: entry.santriId, tanggal: entry.tanggal, jenis: entry.jenis,
-        keterangan: entry.keterangan, tanggal_kembali: entry.tanggalKembali || null
+        keterangan: entry.keterangan, tanggal_kembali: entry.tanggalKembali || null,
+        solusi: entry.solusi || null
       }).select().single();
       if(error) throw error;
       clearBanner(); showToast('Tersimpan');
@@ -1807,6 +1808,7 @@
     prestasi: 'Prestasi',
     pelanggaran: 'Pelanggaran'
   };
+  // (Solusi Konseling sekarang diisi bebas oleh pengguna, seperti field Keterangan — bukan dari daftar pilihan)
   function populateCatatanSantriSelect(){
     const sel = document.getElementById('catatan-santri');
     const prev = sel.value;
@@ -1833,26 +1835,41 @@
         <div class="field" id="ct-kembali-wrap"><label>Tanggal Kembali</label><input type="date" id="ct-tanggal-kembali"></div>
       </div>
       <div class="field" style="margin-top:12px;"><label>Keterangan</label><textarea id="ct-keterangan" placeholder="Contoh: gejala sakit / keperluan izin / topik konseling / prestasi yang diraih / kronologi pelanggaran"></textarea></div>
+      <div class="field" id="ct-solusi-wrap" style="margin-top:12px;display:none;">
+        <label>Solusi</label>
+        <textarea id="ct-solusi" placeholder="Tulis solusi / tindak lanjut hasil konseling di sini"></textarea>
+      </div>
       <div style="margin-top:14px;"><button class="btn btn-gold" id="btn-add-catatan">Simpan Catatan</button></div>
     `;
+    const jenisEl = document.getElementById('ct-jenis');
+    const solusiWrap = document.getElementById('ct-solusi-wrap');
+    function toggleSolusiWrap(){
+      solusiWrap.style.display = jenisEl.value === 'konseling' ? '' : 'none';
+      if(jenisEl.value !== 'konseling') document.getElementById('ct-solusi').value = '';
+    }
+    jenisEl.addEventListener('change', toggleSolusiWrap);
+    toggleSolusiWrap();
     document.getElementById('btn-add-catatan').addEventListener('click', async ()=>{
       const sid = document.getElementById('catatan-santri').value;
       if(!sid) return;
       const btn = document.getElementById('btn-add-catatan');
       btn.disabled = true;
+      const jenisVal = document.getElementById('ct-jenis').value;
       const created = await dbAddCatatan({
         santriId: sid,
         tanggal: document.getElementById('ct-tanggal').value || todayStr(),
-        jenis: document.getElementById('ct-jenis').value,
+        jenis: jenisVal,
         keterangan: document.getElementById('ct-keterangan').value.trim(),
-        tanggalKembali: document.getElementById('ct-tanggal-kembali').value || null
+        tanggalKembali: document.getElementById('ct-tanggal-kembali').value || null,
+        solusi: jenisVal === 'konseling' ? (document.getElementById('ct-solusi').value.trim() || null) : null
       });
       btn.disabled = false;
       if(!created) return;
       if(!catatanData[sid]) catatanData[sid] = [];
-      catatanData[sid].unshift({id:created.id, tanggal:created.tanggal, jenis:created.jenis, keterangan:created.keterangan, tanggalKembali:created.tanggal_kembali});
+      catatanData[sid].unshift({id:created.id, tanggal:created.tanggal, jenis:created.jenis, keterangan:created.keterangan, tanggalKembali:created.tanggal_kembali, solusi:created.solusi});
       document.getElementById('ct-keterangan').value = '';
       document.getElementById('ct-tanggal-kembali').value = '';
+      document.getElementById('ct-solusi').value = '';
       renderCatatanHistory();
     });
   }
@@ -1867,12 +1884,13 @@
     if(!document.getElementById('catatan-table')){
       table.parentElement.innerHTML = '<table id="catatan-table"></table>';
     }
-    let html = `<thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Kembali</th><th></th></tr></thead><tbody>`;
+    let html = `<thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Solusi</th><th>Kembali</th><th></th></tr></thead><tbody>`;
     entries.forEach(e=>{
       html += `<tr>
         <td class="mono">${fmtTanggalShort(e.tanggal)}</td>
         <td>${JENIS_CATATAN_LABEL[e.jenis] || e.jenis}</td>
         <td style="max-width:280px;color:var(--ink-soft);">${escapeHtml(e.keterangan||'-')}</td>
+        <td>${e.jenis === 'konseling' && e.solusi ? escapeHtml(e.solusi) : '-'}</td>
         <td class="mono">${e.tanggalKembali ? fmtTanggalShort(e.tanggalKembali) : '-'}</td>
         <td><button class="del-x" data-del-catatan="${e.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg></button></td>
       </tr>`;
