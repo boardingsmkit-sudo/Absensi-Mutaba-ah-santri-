@@ -1687,7 +1687,6 @@
         <th>Senin</th><th>Kamis</th>
       </tr>`;
     let html = `<thead>${head}</thead><tbody>`;
-    const isSantri = currentProfile && currentProfile.role === 'santri';
 
     daftarSantri.forEach(s=>{
       const key = s.id + '_' + date;
@@ -1696,18 +1695,12 @@
       const sedangHaid = isPerempuan && !!rec.haid;
       html += `<tr${sedangHaid ? ' style="background:#FFF7E8;"' : ''}>
         <td><strong>${escapeHtml(s.nama)}</strong><br><span style="font-size:11px;color:var(--ink-soft);">${escapeHtml(s.kelas||'')}</span></td>
-        <td style="text-align:center;">${isPerempuan ? (isSantri ? (sedangHaid?'✓':'') : `<input type="checkbox" class="chk" data-santri="${s.id}" data-field="haid" data-haid-toggle="1" ${sedangHaid?'checked':''}>`) : ''}</td>`;
-
-      const renderCell = (checked, dash)=>{
-        if(dash) return `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
-        if(isSantri) return `<td style="text-align:center;">${checked ? '✓' : ''}</td>`;
-        return null; // handled per-case below when musyrif (needs data attrs)
-      };
+        <td style="text-align:center;">${isPerempuan ? `<input type="checkbox" class="chk" data-santri="${s.id}" data-field="haid" data-haid-toggle="1" ${sedangHaid?'checked':''}>` : ''}</td>`;
 
       // Sholat Fardhu
       IBADAH_FARDHU.forEach(f=>{
-        if(sedangHaid || isSantri){
-          html += renderCell(rec[f.key], sedangHaid);
+        if(sedangHaid){
+          html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
         }else{
           html += `<td><input type="checkbox" class="chk" data-santri="${s.id}" data-field="${f.key}" ${rec[f.key]?'checked':''}></td>`;
         }
@@ -1717,8 +1710,6 @@
       RAWATIB_STRUKTUR.forEach(r=>{
         if(sedangHaid){
           html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
-        }else if(isSantri){
-          html += `<td style="text-align:center;font-size:11.5px;">${rec[r.qobliyah]?'Q✓':''} ${r.baediyah && rec[r.baediyah]?'B✓':''}</td>`;
         }else{
           html += `<td><div class="qb-cell">
             <label class="qb-item"><input type="checkbox" class="chk-sm gold" data-santri="${s.id}" data-field="${r.qobliyah}" ${rec[r.qobliyah]?'checked':''}><span>Q</span></label>
@@ -1729,8 +1720,8 @@
 
       // Tahajud & Dhuha
       IBADAH_SUNNAH.forEach(f=>{
-        if(sedangHaid || isSantri){
-          html += renderCell(rec[f.key], sedangHaid);
+        if(sedangHaid){
+          html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
         }else{
           html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-field="${f.key}" ${rec[f.key]?'checked':''}></td>`;
         }
@@ -1738,8 +1729,8 @@
 
       // Puasa Sunnah Senin & Kamis: dua kolom tetap, selalu tampil apapun tanggalnya
       ['puasa_senin','puasa_kamis'].forEach(fieldKey=>{
-        if(sedangHaid || isSantri){
-          html += renderCell(rec[fieldKey], sedangHaid);
+        if(sedangHaid){
+          html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
         }else{
           html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-field="${fieldKey}" ${rec[fieldKey]?'checked':''}></td>`;
         }
@@ -1777,7 +1768,6 @@
   function renderKegiatanTable(){
     const wrap = document.getElementById('kegiatan-table-wrap');
     const date = dateInput.value || todayStr();
-    const isSantri = currentProfile && currentProfile.role === 'santri';
     let daftarSantri = sortSantriList(santriList);
     if(absensiFilterKelas) daftarSantri = daftarSantri.filter(s=>s.kelas === absensiFilterKelas);
     if(daftarSantri.length === 0){
@@ -1803,11 +1793,7 @@
       kegiatanList.forEach(f=>{
         const key = s.id + '_' + f.id + '_' + date;
         const hadir = absensiKegiatanData[key] && absensiKegiatanData[key].hadir;
-        if(isSantri){
-          html += `<td style="text-align:center;">${hadir ? '✓' : '—'}</td>`;
-        }else{
-          html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-kegiatan="${f.id}" ${hadir?'checked':''}></td>`;
-        }
+        html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-kegiatan="${f.id}" ${hadir?'checked':''}></td>`;
       });
       html += `</tr>`;
     });
@@ -2594,7 +2580,11 @@
     }
     document.querySelectorAll('.side-nav button').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    const defaultTab = role === 'santri' ? 'tahfidz' : 'absensi';
+    const filterKelasField = document.getElementById('absensi-filter-kelas');
+    if(filterKelasField && filterKelasField.closest('.field')){
+      filterKelasField.closest('.field').style.display = (role === 'santri') ? 'none' : '';
+    }
+    const defaultTab = 'absensi';
     const defaultBtn = document.querySelector(`.side-nav button[data-tab="${defaultTab}"]`);
     if(defaultBtn) defaultBtn.classList.add('active');
     const defaultPanel = document.getElementById('panel-' + defaultTab);
