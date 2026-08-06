@@ -498,7 +498,7 @@
     </div>
 
     <nav class="side-nav">
-      <button data-tab="absensi" data-role="musyrif" class="active">
+      <button data-tab="absensi" class="active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         <span>Absensi Harian</span>
       </button>
@@ -517,6 +517,10 @@
       <button data-tab="keuangan" data-role="musyrif">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>
         <span>Keuangan</span>
+      </button>
+      <button data-tab="pengaturan" data-role="musyrif">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span>Pengaturan</span>
       </button>
       <button data-tab="rekap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
@@ -560,6 +564,12 @@
           <div class="field">
             <label>Tanggal</label>
             <input type="date" id="absensi-date">
+          </div>
+          <div class="field" style="min-width:160px;">
+            <label>Filter Kelas</label>
+            <select id="absensi-filter-kelas">
+              <option value="">Semua Kelas</option>
+            </select>
           </div>
         </div>
       </div>
@@ -617,7 +627,7 @@
           </div>
           <div class="field" style="min-width:140px;">
             <label>Kelas</label>
-            <input type="text" id="new-santri-kelas" placeholder="Contoh: 7A">
+            <input type="text" id="new-santri-kelas" list="datalist-kelas" placeholder="Contoh: 7A">
           </div>
           <button class="btn btn-primary" id="btn-add-santri">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -687,6 +697,52 @@
       </div>
     </section>
 
+    <!-- PENGATURAN: Kelas & Kegiatan -->
+    <section class="panel" id="panel-pengaturan">
+      <div class="card">
+        <div class="subtabs">
+          <button data-subtab="kelas" class="active">Data Kelas</button>
+          <button data-subtab="kegiatan">Kegiatan</button>
+        </div>
+
+        <div class="subpanel active" id="subpanel-kelas">
+          <h2>Kelola Data Kelas</h2>
+          <p class="sub">Kelas yang ditambahkan di sini akan muncul sebagai pilihan saat menambah/mengedit data santri, dan bisa dipakai untuk memfilter Absensi Harian per kelas.</p>
+          <div class="row" style="margin-bottom:16px;">
+            <div class="field" style="flex:1;min-width:180px;">
+              <label>Nama Kelas</label>
+              <input type="text" id="new-kelas-nama" placeholder="Contoh: 7A, 10 IPA">
+            </div>
+            <button class="btn btn-primary" id="btn-add-kelas">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Tambah
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table id="master-kelas-table"></table>
+          </div>
+        </div>
+
+        <div class="subpanel" id="subpanel-kegiatan">
+          <h2>Kelola Kegiatan Absensi</h2>
+          <p class="sub">Kegiatan di sini yang muncul sebagai kolom absensi di tab "Absensi Harian" (misal Kajian, English Season, dll). Bisa ditambah atau dihapus bebas.</p>
+          <div class="row" style="margin-bottom:16px;">
+            <div class="field" style="flex:1;min-width:180px;">
+              <label>Nama Kegiatan</label>
+              <input type="text" id="new-kegiatan-nama" placeholder="Contoh: Tahsin Al-Quran">
+            </div>
+            <button class="btn btn-primary" id="btn-add-kegiatan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Tambah
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table id="master-kegiatan-table"></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- REKAP -->
     <section class="panel" id="panel-rekap">
       <div class="card">
@@ -738,6 +794,8 @@
   </main>
   </div>
 </div>
+
+<datalist id="datalist-kelas"></datalist>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
@@ -819,6 +877,10 @@
   let masterPelanggaranList = [];  // [ {id,nama,kategori,poin} ]
   let pelanggaranData = {};     // { santriId: [ {id,tanggal,masterId,keterangan} ] }
   let tabunganData = {};        // { santriId: [ {id,tanggal,jenis,jumlah,keterangan} ] } jenis: 'kredit' (masuk) | 'debit' (keluar/jajan)
+  let kelasList = [];           // [ {id, nama_kelas} ]
+  let kegiatanList = [];        // [ {id, nama, urutan} ]
+  let absensiKegiatanData = {}; // { "santriId_masterKegiatanId_YYYY-MM-DD": {id, hadir} }
+  let absensiFilterKelas = '';  // filter kelas aktif di tab Absensi Harian
 
   const IBADAH_FARDHU = [
     {key:"subuh", label:"Subuh"},
@@ -849,14 +911,7 @@
     ...IBADAH_SUNNAH.map(f=>f.key),
     "puasa_senin", "puasa_kamis"
   ];
-  const KEGIATAN = [
-    {key:"kajian", label:"Kajian/Diniyah"},
-    {key:"english_season", label:"English Season"},
-    {key:"muhadhoroh", label:"Muhadhoroh"},
-    {key:"omagle", label:"Omagle"},
-    {key:"dzikir_pagi", label:"Dzikir Pagi"},
-    {key:"dzikir_sore", label:"Dzikir Sore"}
-  ];
+  // KEGIATAN sekarang dinamis, dimuat dari tabel master_kegiatan ke variabel kegiatanList
 
   const todayStr = () => new Date().toISOString().slice(0,10);
 
@@ -993,6 +1048,36 @@
         });
       });
     }catch(e){ tahfidzData = {}; showToast('Gagal memuat data tahfidz', true); }
+
+    try{
+      const { data, error } = await db.from('master_kelas').select('*').order('urutan').order('nama_kelas');
+      if(error) throw error;
+      kelasList = (data||[]).map(r=>({id:r.id, nama_kelas:r.nama_kelas}));
+      const dl = document.getElementById('datalist-kelas');
+      if(dl) dl.innerHTML = kelasList.map(k=>`<option value="${escapeHtml(k.nama_kelas)}">`).join('');
+      const filterSel = document.getElementById('absensi-filter-kelas');
+      if(filterSel){
+        const prevVal = filterSel.value;
+        filterSel.innerHTML = '<option value="">Semua Kelas</option>' + kelasList.map(k=>`<option value="${escapeHtml(k.nama_kelas)}">${escapeHtml(k.nama_kelas)}</option>`).join('');
+        filterSel.value = prevVal;
+      }
+    }catch(e){ kelasList = []; showToast('Gagal memuat data kelas', true); }
+
+    try{
+      const { data, error } = await db.from('master_kegiatan').select('*').order('urutan').order('nama');
+      if(error) throw error;
+      kegiatanList = (data||[]).map(r=>({id:r.id, nama:r.nama, urutan:r.urutan}));
+    }catch(e){ kegiatanList = []; showToast('Gagal memuat data kegiatan', true); }
+
+    try{
+      const { data, error } = await db.from('absensi_kegiatan').select('*');
+      if(error) throw error;
+      absensiKegiatanData = {};
+      (data||[]).forEach(r=>{
+        const key = r.santri_id + '_' + r.master_kegiatan_id + '_' + r.tanggal;
+        absensiKegiatanData[key] = {id:r.id, hadir:r.hadir};
+      });
+    }catch(e){ absensiKegiatanData = {}; showToast('Gagal memuat absensi kegiatan', true); }
 
     try{
       const { data, error } = await db.from('catatan_santri').select('*').order('tanggal', {ascending:false});
@@ -1190,9 +1275,7 @@
         rawatib_qobliyah_ashar: !!rec.rawatib_qobliyah_ashar,
         rawatib_qobliyah_maghrib: !!rec.rawatib_qobliyah_maghrib, rawatib_baediyah_maghrib: !!rec.rawatib_baediyah_maghrib,
         rawatib_qobliyah_isya: !!rec.rawatib_qobliyah_isya, rawatib_baediyah_isya: !!rec.rawatib_baediyah_isya,
-        tahajud: !!rec.tahajud, dhuha: !!rec.dhuha, puasa_senin: !!rec.puasa_senin, puasa_kamis: !!rec.puasa_kamis, haid: !!rec.haid,
-        kajian: !!rec.kajian, english_season: !!rec.english_season, muhadhoroh: !!rec.muhadhoroh,
-        omagle: !!rec.omagle, dzikir_pagi: !!rec.dzikir_pagi, dzikir_sore: !!rec.dzikir_sore
+        tahajud: !!rec.tahajud, dhuha: !!rec.dhuha, puasa_senin: !!rec.puasa_senin, puasa_kamis: !!rec.puasa_kamis, haid: !!rec.haid
       }, {onConflict: 'santri_id,tanggal'});
       if(error) throw error;
       clearBanner();
@@ -1203,6 +1286,69 @@
       showBanner('Gagal menyimpan absensi', (e && e.message) || JSON.stringify(e));
       return false;
     }
+  }
+
+  /* ---------------- Kegiatan Absensi (dinamis) ---------------- */
+  async function dbSaveAbsensiKegiatan(santriId, masterKegiatanId, tanggal, hadir){
+    if(!db){ showBanner('Tidak bisa menyimpan — database belum terhubung'); return null; }
+    try{
+      const { data, error } = await db.from('absensi_kegiatan').upsert({
+        santri_id: santriId, master_kegiatan_id: masterKegiatanId, tanggal, hadir
+      }, {onConflict: 'santri_id,master_kegiatan_id,tanggal'}).select().single();
+      if(error) throw error;
+      clearBanner();
+      showToast('Tersimpan');
+      return data;
+    }catch(e){
+      showToast('Gagal menyimpan kegiatan', true);
+      showBanner('Gagal menyimpan absensi kegiatan', (e && e.message) || JSON.stringify(e));
+      return null;
+    }
+  }
+
+  /* ---------------- Master Data: Kelas & Kegiatan ---------------- */
+  async function dbAddKelas(namaKelas){
+    if(!db){ showBanner('Tidak bisa menyimpan — database belum terhubung'); return null; }
+    try{
+      const { data, error } = await db.from('master_kelas').insert({nama_kelas: namaKelas}).select().single();
+      if(error) throw error;
+      showToast('Tersimpan');
+      return data;
+    }catch(e){
+      showToast('Gagal menambah kelas', true);
+      showBanner('Gagal menambah kelas', (e && (e.message||e.details)) || JSON.stringify(e));
+      return null;
+    }
+  }
+  async function dbDeleteKelas(id){
+    if(!db) return false;
+    try{
+      const { error } = await db.from('master_kelas').delete().eq('id', id);
+      if(error) throw error;
+      showToast('Terhapus'); return true;
+    }catch(e){ showToast('Gagal menghapus kelas', true); return false; }
+  }
+  async function dbAddKegiatan(nama){
+    if(!db){ showBanner('Tidak bisa menyimpan — database belum terhubung'); return null; }
+    try{
+      const urutan = kegiatanList.length;
+      const { data, error } = await db.from('master_kegiatan').insert({nama, urutan}).select().single();
+      if(error) throw error;
+      showToast('Tersimpan');
+      return data;
+    }catch(e){
+      showToast('Gagal menambah kegiatan', true);
+      showBanner('Gagal menambah kegiatan', (e && e.message) || JSON.stringify(e));
+      return null;
+    }
+  }
+  async function dbDeleteKegiatan(id){
+    if(!db) return false;
+    try{
+      const { error } = await db.from('master_kegiatan').delete().eq('id', id);
+      if(error) throw error;
+      showToast('Terhapus'); return true;
+    }catch(e){ showToast('Gagal menghapus kegiatan', true); return false; }
   }
 
   async function dbAddTahfidz(entry){
@@ -1284,6 +1430,7 @@
       if(btn.dataset.tab === 'tahfidz') renderTahfidzTab();
       if(btn.dataset.tab === 'catatan') renderCatatanTab();
       if(btn.dataset.tab === 'keuangan') renderKeuanganTab();
+      if(btn.dataset.tab === 'pengaturan') renderPengaturanTab();
       closeSidebar();
     });
   });
@@ -1393,7 +1540,7 @@
             <option value="P" ${s.jenis_kelamin==='P'?'selected':''}>Perempuan</option>
           </select>
         </div>
-        <div class="field" style="min-width:120px;"><label>Kelas</label><input type="text" id="md-kelas" value="${escapeHtml(s.kelas||'')}"></div>
+        <div class="field" style="min-width:120px;"><label>Kelas</label><input type="text" id="md-kelas" list="datalist-kelas" value="${escapeHtml(s.kelas||'')}"></div>
       </div>
       <div class="row" style="margin-top:12px;">
         <div class="field" style="min-width:140px;"><label>NIS</label><input type="text" id="md-nis" value="${escapeHtml(s.nis||'')}"></div>
@@ -1506,12 +1653,19 @@
   const dateInput = document.getElementById('absensi-date');
   dateInput.value = todayStr();
   dateInput.addEventListener('change', renderAbsensiTable);
+  const filterKelasEl = document.getElementById('absensi-filter-kelas');
+  if(filterKelasEl) filterKelasEl.addEventListener('change', ()=>{
+    absensiFilterKelas = filterKelasEl.value;
+    renderAbsensiTable();
+  });
 
   function renderAbsensiTable(){
     const wrap = document.getElementById('absensi-table-wrap');
     const date = dateInput.value || todayStr();
-    if(santriList.length === 0){
-      wrap.innerHTML = emptyState('Belum ada santri. Tambahkan santri di tab "Data Santri".');
+    let daftarSantri = sortSantriList(santriList);
+    if(absensiFilterKelas) daftarSantri = daftarSantri.filter(s=>s.kelas === absensiFilterKelas);
+    if(daftarSantri.length === 0){
+      wrap.innerHTML = emptyState(santriList.length===0 ? 'Belum ada santri. Tambahkan santri di tab "Data Santri".' : 'Tidak ada santri di kelas ini.');
       return;
     }
     if(!document.getElementById('absensi-table')){
@@ -1533,20 +1687,27 @@
         <th>Senin</th><th>Kamis</th>
       </tr>`;
     let html = `<thead>${head}</thead><tbody>`;
+    const isSantri = currentProfile && currentProfile.role === 'santri';
 
-    sortSantriList(santriList).forEach(s=>{
+    daftarSantri.forEach(s=>{
       const key = s.id + '_' + date;
       const rec = mutabaahData[key] || {};
       const isPerempuan = s.jenis_kelamin === 'P';
       const sedangHaid = isPerempuan && !!rec.haid;
       html += `<tr${sedangHaid ? ' style="background:#FFF7E8;"' : ''}>
         <td><strong>${escapeHtml(s.nama)}</strong><br><span style="font-size:11px;color:var(--ink-soft);">${escapeHtml(s.kelas||'')}</span></td>
-        <td>${isPerempuan ? `<input type="checkbox" class="chk" data-santri="${s.id}" data-field="haid" data-haid-toggle="1" ${sedangHaid?'checked':''}>` : ''}</td>`;
+        <td style="text-align:center;">${isPerempuan ? (isSantri ? (sedangHaid?'✓':'') : `<input type="checkbox" class="chk" data-santri="${s.id}" data-field="haid" data-haid-toggle="1" ${sedangHaid?'checked':''}>`) : ''}</td>`;
+
+      const renderCell = (checked, dash)=>{
+        if(dash) return `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
+        if(isSantri) return `<td style="text-align:center;">${checked ? '✓' : ''}</td>`;
+        return null; // handled per-case below when musyrif (needs data attrs)
+      };
 
       // Sholat Fardhu
       IBADAH_FARDHU.forEach(f=>{
-        if(sedangHaid){
-          html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
+        if(sedangHaid || isSantri){
+          html += renderCell(rec[f.key], sedangHaid);
         }else{
           html += `<td><input type="checkbox" class="chk" data-santri="${s.id}" data-field="${f.key}" ${rec[f.key]?'checked':''}></td>`;
         }
@@ -1556,6 +1717,8 @@
       RAWATIB_STRUKTUR.forEach(r=>{
         if(sedangHaid){
           html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
+        }else if(isSantri){
+          html += `<td style="text-align:center;font-size:11.5px;">${rec[r.qobliyah]?'Q✓':''} ${r.baediyah && rec[r.baediyah]?'B✓':''}</td>`;
         }else{
           html += `<td><div class="qb-cell">
             <label class="qb-item"><input type="checkbox" class="chk-sm gold" data-santri="${s.id}" data-field="${r.qobliyah}" ${rec[r.qobliyah]?'checked':''}><span>Q</span></label>
@@ -1566,8 +1729,8 @@
 
       // Tahajud & Dhuha
       IBADAH_SUNNAH.forEach(f=>{
-        if(sedangHaid){
-          html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
+        if(sedangHaid || isSantri){
+          html += renderCell(rec[f.key], sedangHaid);
         }else{
           html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-field="${f.key}" ${rec[f.key]?'checked':''}></td>`;
         }
@@ -1575,8 +1738,8 @@
 
       // Puasa Sunnah Senin & Kamis: dua kolom tetap, selalu tampil apapun tanggalnya
       ['puasa_senin','puasa_kamis'].forEach(fieldKey=>{
-        if(sedangHaid){
-          html += `<td style="text-align:center;color:var(--ink-soft);font-size:11px;" title="Sedang haid">—</td>`;
+        if(sedangHaid || isSantri){
+          html += renderCell(rec[fieldKey], sedangHaid);
         }else{
           html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-field="${fieldKey}" ${rec[fieldKey]?'checked':''}></td>`;
         }
@@ -1614,24 +1777,37 @@
   function renderKegiatanTable(){
     const wrap = document.getElementById('kegiatan-table-wrap');
     const date = dateInput.value || todayStr();
-    if(santriList.length === 0){
-      wrap.innerHTML = emptyState('Belum ada santri. Tambahkan santri di tab "Data Santri".');
+    const isSantri = currentProfile && currentProfile.role === 'santri';
+    let daftarSantri = sortSantriList(santriList);
+    if(absensiFilterKelas) daftarSantri = daftarSantri.filter(s=>s.kelas === absensiFilterKelas);
+    if(daftarSantri.length === 0){
+      wrap.innerHTML = emptyState(santriList.length===0 ? 'Belum ada santri. Tambahkan santri di tab "Data Santri".' : 'Tidak ada santri di kelas ini.');
+      return;
+    }
+    if(kegiatanList.length === 0){
+      wrap.innerHTML = emptyState('Belum ada kegiatan. Tambahkan di menu Pengaturan → Kegiatan.');
       return;
     }
     if(!document.getElementById('kegiatan-table')){
       wrap.innerHTML = '<table id="kegiatan-table"></table>';
     }
     const table = document.getElementById('kegiatan-table');
-    let head = `<th>Nama</th>` + KEGIATAN.map(f=>`<th>${f.label}</th>`).join('');
+    let head = `<th>Nama</th>` + kegiatanList.map(f=>`<th>${escapeHtml(f.nama)}</th>`).join('');
     let html = `<thead><tr>${head}</tr></thead><tbody>`;
 
-    sortSantriList(santriList).forEach(s=>{
-      const key = s.id + '_' + date;
-      const rec = mutabaahData[key] || {};
-      html += `<tr>
+    daftarSantri.forEach(s=>{
+      const mKey = s.id + '_' + date;
+      const sedangHaid = s.jenis_kelamin === 'P' && mutabaahData[mKey] && mutabaahData[mKey].haid;
+      html += `<tr${sedangHaid ? ' style="background:#FFF7E8;"' : ''}>
         <td><strong>${escapeHtml(s.nama)}</strong><br><span style="font-size:11px;color:var(--ink-soft);">${escapeHtml(s.kelas||'')}</span></td>`;
-      KEGIATAN.forEach(f=>{
-        html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-field="${f.key}" ${rec[f.key]?'checked':''}></td>`;
+      kegiatanList.forEach(f=>{
+        const key = s.id + '_' + f.id + '_' + date;
+        const hadir = absensiKegiatanData[key] && absensiKegiatanData[key].hadir;
+        if(isSantri){
+          html += `<td style="text-align:center;">${hadir ? '✓' : '—'}</td>`;
+        }else{
+          html += `<td><input type="checkbox" class="chk gold" data-santri="${s.id}" data-kegiatan="${f.id}" ${hadir?'checked':''}></td>`;
+        }
       });
       html += `</tr>`;
     });
@@ -1639,18 +1815,17 @@
     table.innerHTML = html;
     table.querySelectorAll('input[type=checkbox]').forEach(cb=>{
       cb.addEventListener('change', async ()=>{
-        const sid = cb.dataset.santri, field = cb.dataset.field;
-        const key = sid + '_' + date;
-        if(!mutabaahData[key]) mutabaahData[key] = {};
-        const prevValue = mutabaahData[key][field];
-        mutabaahData[key][field] = cb.checked;
-        mutabaahData[key].tanggal = date;
+        const sid = cb.dataset.santri, kegiatanId = cb.dataset.kegiatan;
+        const key = sid + '_' + kegiatanId + '_' + date;
+        const prev = absensiKegiatanData[key];
         cb.disabled = true;
-        const ok = await dbSaveMutabaah(sid, date, mutabaahData[key]);
+        const saved = await dbSaveAbsensiKegiatan(sid, kegiatanId, date, cb.checked);
         cb.disabled = false;
-        if(!ok){
-          mutabaahData[key][field] = prevValue;
-          cb.checked = !!prevValue;
+        if(saved){
+          absensiKegiatanData[key] = {id: saved.id, hadir: cb.checked};
+        }else{
+          absensiKegiatanData[key] = prev;
+          cb.checked = !!(prev && prev.hadir);
         }
       });
     });
@@ -2013,6 +2188,101 @@
     renderTabunganHistory();
   }
 
+  /* ================= PENGATURAN: Kelas & Kegiatan ================= */
+  function renderMasterKelasTable(){
+    const table = document.getElementById('master-kelas-table');
+    if(kelasList.length === 0){
+      table.parentElement.innerHTML = emptyState('Belum ada kelas. Tambahkan lewat form di atas.');
+      return;
+    }
+    if(!document.getElementById('master-kelas-table')){
+      table.parentElement.innerHTML = '<table id="master-kelas-table"></table>';
+    }
+    let html = `<thead><tr><th>Nama Kelas</th><th></th></tr></thead><tbody>`;
+    kelasList.forEach(k=>{
+      html += `<tr>
+        <td>${escapeHtml(k.nama_kelas)}</td>
+        <td><button class="del-x" data-del-kelas="${k.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg></button></td>
+      </tr>`;
+    });
+    html += `</tbody>`;
+    document.getElementById('master-kelas-table').innerHTML = html;
+    document.getElementById('master-kelas-table').querySelectorAll('[data-del-kelas]').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        if(!confirm('Hapus kelas ini? Santri yang sudah memakai nama kelas ini datanya tidak berubah, cuma tidak ada lagi di daftar pilihan.')) return;
+        const ok = await dbDeleteKelas(b.dataset.delKelas);
+        if(!ok) return;
+        kelasList = kelasList.filter(k=>k.id !== b.dataset.delKelas);
+        renderMasterKelasTable();
+        const dl = document.getElementById('datalist-kelas');
+        if(dl) dl.innerHTML = kelasList.map(k=>`<option value="${escapeHtml(k.nama_kelas)}">`).join('');
+        const filterSel = document.getElementById('absensi-filter-kelas');
+        if(filterSel) filterSel.innerHTML = '<option value="">Semua Kelas</option>' + kelasList.map(k=>`<option value="${escapeHtml(k.nama_kelas)}">${escapeHtml(k.nama_kelas)}</option>`).join('');
+      });
+    });
+  }
+  document.getElementById('btn-add-kelas').addEventListener('click', async ()=>{
+    const el = document.getElementById('new-kelas-nama');
+    const nama = el.value.trim();
+    if(!nama){ el.focus(); return; }
+    const created = await dbAddKelas(nama);
+    if(!created) return;
+    kelasList.push({id:created.id, nama_kelas:created.nama_kelas});
+    kelasList.sort((a,b)=>a.nama_kelas.localeCompare(b.nama_kelas));
+    el.value = '';
+    renderMasterKelasTable();
+    const dl = document.getElementById('datalist-kelas');
+    if(dl) dl.innerHTML = kelasList.map(k=>`<option value="${escapeHtml(k.nama_kelas)}">`).join('');
+    const filterSel = document.getElementById('absensi-filter-kelas');
+    if(filterSel) filterSel.innerHTML = '<option value="">Semua Kelas</option>' + kelasList.map(k=>`<option value="${escapeHtml(k.nama_kelas)}">${escapeHtml(k.nama_kelas)}</option>`).join('');
+  });
+
+  function renderMasterKegiatanTable(){
+    const table = document.getElementById('master-kegiatan-table');
+    if(kegiatanList.length === 0){
+      table.parentElement.innerHTML = emptyState('Belum ada kegiatan. Tambahkan lewat form di atas.');
+      return;
+    }
+    if(!document.getElementById('master-kegiatan-table')){
+      table.parentElement.innerHTML = '<table id="master-kegiatan-table"></table>';
+    }
+    let html = `<thead><tr><th>Nama Kegiatan</th><th></th></tr></thead><tbody>`;
+    kegiatanList.forEach(k=>{
+      html += `<tr>
+        <td>${escapeHtml(k.nama)}</td>
+        <td><button class="del-x" data-del-kegiatan="${k.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg></button></td>
+      </tr>`;
+    });
+    html += `</tbody>`;
+    document.getElementById('master-kegiatan-table').innerHTML = html;
+    document.getElementById('master-kegiatan-table').querySelectorAll('[data-del-kegiatan]').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        if(!confirm('Hapus kegiatan ini? Riwayat absensi kegiatan ini yang sudah tercatat akan ikut terhapus.')) return;
+        const ok = await dbDeleteKegiatan(b.dataset.delKegiatan);
+        if(!ok) return;
+        kegiatanList = kegiatanList.filter(k=>k.id !== b.dataset.delKegiatan);
+        renderMasterKegiatanTable();
+        renderKegiatanTable();
+      });
+    });
+  }
+  document.getElementById('btn-add-kegiatan').addEventListener('click', async ()=>{
+    const el = document.getElementById('new-kegiatan-nama');
+    const nama = el.value.trim();
+    if(!nama){ el.focus(); return; }
+    const created = await dbAddKegiatan(nama);
+    if(!created) return;
+    kegiatanList.push({id:created.id, nama:created.nama, urutan:created.urutan});
+    el.value = '';
+    renderMasterKegiatanTable();
+    renderKegiatanTable();
+  });
+
+  function renderPengaturanTab(){
+    renderMasterKelasTable();
+    renderMasterKegiatanTable();
+  }
+
   /* ---------------- Rekap ---------------- */
   function computeRekapData(dariTgl, sampaiTgl){
     return sortSantriList(santriList).map(s=>{
@@ -2022,8 +2292,6 @@
       const totalHari = recs.length;
       let fardhuChecked = 0;
       let rawatibQobliyah=0, rawatibBaediyah=0, tahajud=0, dhuha=0, puasaSenin=0, puasaKamis=0, hariHaid=0;
-      const kegiatanCount = {};
-      KEGIATAN.forEach(f=>{ kegiatanCount[f.key] = 0; });
       recs.forEach(r=>{
         if(r.haid){
           hariHaid++;
@@ -2042,8 +2310,25 @@
         if(r.dhuha) dhuha++;
         if(r.puasa_senin) puasaSenin++;
         if(r.puasa_kamis) puasaKamis++;
-        KEGIATAN.forEach(f=>{ if(r[f.key]) kegiatanCount[f.key]++; });
       });
+
+      // Hitung kegiatan dari absensiKegiatanData (dinamis, per master_kegiatan_id)
+      const kegiatanCount = {};
+      kegiatanList.forEach(f=>{ kegiatanCount[f.id] = 0; });
+      Object.keys(absensiKegiatanData).forEach(key=>{
+        if(!key.startsWith(s.id + '_')) return;
+        const entry = absensiKegiatanData[key];
+        if(!entry || !entry.hadir) return;
+        const rest = key.slice(s.id.length + 1);
+        const usIdx = rest.indexOf('_');
+        const mkId = rest.slice(0, usIdx);
+        const tgl = rest.slice(usIdx+1);
+        if(dariTgl && tgl < dariTgl) return;
+        if(sampaiTgl && tgl > sampaiTgl) return;
+        if(kegiatanCount[mkId] === undefined) kegiatanCount[mkId] = 0;
+        kegiatanCount[mkId]++;
+      });
+
       const hariAktif = totalHari - hariHaid;
       const persenFardhu = hariAktif > 0 ? Math.round((fardhuChecked/(hariAktif*5))*100) : 0;
       let setoranList = (tahfidzData[s.id]||[]);
@@ -2108,7 +2393,7 @@
     let thtml = `<thead><tr>
       <th>Nama Santri</th><th>Kelas</th><th>Hari Tercatat</th><th>Hari Haid</th><th>% Sholat Fardhu</th>
       <th>Rawatib Qobliyah</th><th>Rawatib Ba'diyah</th><th>Tahajud</th><th>Dhuha</th><th>Puasa Senin</th><th>Puasa Kamis</th>
-      ${KEGIATAN.map(f=>`<th>${f.label}</th>`).join('')}
+      ${kegiatanList.map(f=>`<th>${escapeHtml(f.nama)}</th>`).join('')}
       <th>Setoran Tahfidz</th>
     </tr></thead><tbody>`;
     data.forEach(d=>{
@@ -2124,7 +2409,7 @@
         <td class="mono">${d.dhuha}</td>
         <td class="mono">${d.puasaSenin}</td>
         <td class="mono">${d.puasaKamis}</td>
-        ${KEGIATAN.map(f=>`<td class="mono">${d.kegiatanCount[f.key]}</td>`).join('')}
+        ${kegiatanList.map(f=>`<td class="mono">${d.kegiatanCount[f.id]||0}</td>`).join('')}
         <td class="mono">${d.setoranCount}</td>
       </tr>`;
     });
@@ -2158,11 +2443,11 @@
         if(!canvas) return;
         const labels = [
           'Rawatib Qobliyah','Rawatib Ba\'diyah','Tahajud','Dhuha','Puasa Senin','Puasa Kamis',
-          ...KEGIATAN.map(f=>f.label)
+          ...kegiatanList.map(f=>f.nama)
         ];
         const values = [
           d.rawatibQobliyah, d.rawatibBaediyah, d.tahajud, d.dhuha, d.puasaSenin, d.puasaKamis,
-          ...KEGIATAN.map(f=>d.kegiatanCount[f.key])
+          ...kegiatanList.map(f=>d.kegiatanCount[f.id]||0)
         ];
         const chart = new Chart(canvas.getContext('2d'), {
           type: 'bar',
